@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Identifier</title>
+<meta name="description" content="Paste a hash string and see a ranked list of likely algorithms by length and format: MD5, SHA-1, SHA-256, SHA-512, CRC32, bcrypt, argon2, NTLM, MySQL, and more. Format-based, fully client-side.">
+<link rel="canonical" href="https://0xelitesystem.github.io/hash-identifier/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hash Identifier">
+<meta property="og:description" content="Identify a hash by length and format with ranked candidates and confidence. MD5, SHA family, CRC32, bcrypt, argon2, NTLM, MySQL, and more. Runs in your browser.">
+<meta property="og:url" content="https://0xelitesystem.github.io/hash-identifier/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Hash Identifier",
+  "description": "Paste a hash string and see a ranked list of likely algorithms by length and format: MD5, SHA-1, SHA-256, SHA-512, CRC32, bcrypt, argon2, NTLM, MySQL, and more. Format-based heuristic identification, runs entirely in your browser.",
+  "url": "https://0xelitesystem.github.io/hash-identifier/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Organization", "name": "0xelitesystem" }
+}
+</script>
+<style>
+:root {
+  --bg: #fafaf6;
+  --surface: #ffffff;
+  --ink: #0a1d1e;
+  --ink-soft: #2c4a4c;
+  --rule: #c8d4d3;
+  --teal: #0f5c60;
+  --teal-deep: #0a4548;
+  --gold: #b07d2a;
+  --gold-deep: #8a611f;
+  --ok: #1a5c2e;
+  --warn: #8a5a00;
+  --err: #8b1a1a;
+  --code-bg: #f0ebe1;
+  --high: #1a5c2e;
+  --med: #8a5a00;
+  --low: #8b1a1a;
+}
+[data-theme="dark"] {
+  --bg: #0c1c1d;
+  --surface: #14292a;
+  --ink: #e8ebe6;
+  --ink-soft: #b0c0bd;
+  --rule: #2a4042;
+  --teal: #4ab4ba;
+  --teal-deep: #6dc8ce;
+  --gold: #d4a155;
+  --gold-deep: #e6b876;
+  --ok: #6dd380;
+  --warn: #d4a155;
+  --err: #e88080;
+  --code-bg: #0a1718;
+  --high: #6dd380;
+  --med: #d4a155;
+  --low: #e88080;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  line-height: 1.55;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--teal);
+}
+.tag {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-deep);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .tag { color: var(--gold); }
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.theme-btn:hover { border-color: var(--teal); color: var(--teal); }
+.lede {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.75rem;
+  max-width: 64ch;
+}
+.input-box {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+}
+label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+textarea {
+  width: 100%;
+  min-height: 70px;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  resize: vertical;
+  border-radius: 2px;
+}
+textarea:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+.input-row { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+button {
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 2px;
+}
+button:hover { border-color: var(--teal); }
+button.primary {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--surface);
+  font-weight: 600;
+}
+[data-theme="dark"] button.primary { color: var(--bg) !important; }
+button.primary:hover { background: var(--teal-deep); border-color: var(--teal-deep); }
+.meta {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.25rem;
+}
+.candidate {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.conf {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  color: #fff;
+  margin-top: 0.15rem;
+}
+.conf.high { background: var(--high); }
+.conf.med { background: var(--med); }
+.conf.low { background: var(--low); }
+[data-theme="dark"] .conf { color: var(--bg); }
+.cand-body { flex: 1; }
+.cand-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--teal);
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+.cand-note { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.25rem; }
+.empty {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  background: var(--code-bg);
+  border-left: 3px solid var(--rule);
+  padding: 0.85rem;
+  border-radius: 2px;
+}
+.disclaimer {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  background: var(--code-bg);
+  border-left: 3px solid var(--gold);
+  padding: 0.65rem 0.85rem;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+}
+.ref { margin-top: 1.5rem; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.8rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+th { color: var(--ink-soft); font-weight: 600; }
+td { color: var(--ink); }
+footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+footer a { color: var(--teal); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  body { padding: 1rem 0.75rem; }
+  h1 { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Hash Identifier</h1>
+    <div class="tag">Guess the algorithm by shape</div>
+  </div>
+  <button class="theme-btn" id="theme-toggle" type="button">Dark</button>
+</header>
+
+<p class="lede">Paste a hash string. This tool ranks the likely algorithms by length and format: MD5, SHA-1, SHA-256, SHA-512, CRC32, bcrypt, argon2, NTLM, MySQL, and more. It reads the shape of the string, not its meaning, so results are candidates, not proof. Nothing leaves this page.</p>
+
+<div class="input-box">
+  <label for="hash-input">Hash</label>
+  <textarea id="hash-input" placeholder="Paste a hash, for example 5f4dcc3b5aa765d61d8327deb882cf99" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
+  <div class="input-row">
+    <button class="primary" id="id-btn" type="button">Identify</button>
+    <button id="sample-btn" type="button">Load sample</button>
+    <button id="clear-btn" type="button">Clear</button>
+  </div>
+</div>
+
+<div class="disclaimer">
+  This is format-based heuristic identification, not verification. Different algorithms often produce the same length and character set (for example MD5, NTLM, and several others are all 32 hex characters), so many results are ambiguous by nature. The tool cannot confirm which algorithm actually produced a hash. Use the ranked list as a starting point.
+</div>
+
+<div class="meta" id="meta"></div>
+<div id="output"></div>
+
+<div class="ref">
+  <label style="margin-bottom:0.65rem;">Quick reference</label>
+  <table>
+    <thead><tr><th>Algorithm</th><th>Length</th><th>Format</th></tr></thead>
+    <tbody>
+      <tr><td>CRC32</td><td>8</td><td>hex</td></tr>
+      <tr><td>MD5 / NTLM / MD4</td><td>32</td><td>hex</td></tr>
+      <tr><td>SHA-1</td><td>40</td><td>hex</td></tr>
+      <tr><td>SHA-224</td><td>56</td><td>hex</td></tr>
+      <tr><td>SHA-256</td><td>64</td><td>hex</td></tr>
+      <tr><td>SHA-384</td><td>96</td><td>hex</td></tr>
+      <tr><td>SHA-512</td><td>128</td><td>hex</td></tr>
+      <tr><td>bcrypt</td><td>60</td><td>$2a$ / $2b$ / $2y$ prefix</td></tr>
+      <tr><td>argon2</td><td>varies</td><td>$argon2i$ / $argon2d$ / $argon2id$ prefix</td></tr>
+      <tr><td>MySQL 4.1+</td><td>41</td><td>* then 40 hex</td></tr>
+      <tr><td>MySQL &lt; 4.1</td><td>16</td><td>hex</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <div>Hash Identifier. Open source, MIT licensed.</div>
+  <div>Built by <a href="https://elitesystem.ai" target="_blank" rel="noopener">elitesystem.ai</a></div>
+</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+const themeBtn = $("theme-toggle");
+function setTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  themeBtn.textContent = t === "dark" ? "Light" : "Dark";
+}
+themeBtn.addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  setTheme(cur === "dark" ? "light" : "dark");
+});
+setTheme("light");
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+const HEX = /^[0-9a-fA-F]+$/;
+const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
+
+// Returns a list of { name, confidence: "high"|"med"|"low", note }.
+function identify(raw) {
+  const h = raw.trim();
+  const out = [];
+  if (!h) return out;
+
+  const len = h.length;
+  const isHex = HEX.test(h);
+
+  // Prefixed schemes are the strongest signals.
+  if (/^\$2[abxy]\$\d\d\$/.test(h)) {
+    out.push({ name: "bcrypt", confidence: "high", note: "The $2a$ / $2b$ / $2y$ prefix with a cost factor is a clear bcrypt signature." });
+    return out;
+  }
+  if (/^\$argon2(id|i|d)\$/.test(h)) {
+    out.push({ name: "argon2", confidence: "high", note: "The $argon2 prefix identifies an Argon2 PHC-format string." });
+    return out;
+  }
+  if (/^\$1\$/.test(h)) { out.push({ name: "md5crypt", confidence: "high", note: "The $1$ prefix is Unix md5crypt." }); return out; }
+  if (/^\$5\$/.test(h)) { out.push({ name: "sha256crypt", confidence: "high", note: "The $5$ prefix is Unix sha256crypt." }); return out; }
+  if (/^\$6\$/.test(h)) { out.push({ name: "sha512crypt", confidence: "high", note: "The $6$ prefix is Unix sha512crypt." }); return out; }
+  if (/^\{SHA\}/i.test(h)) { out.push({ name: "LDAP SHA-1 (SSHA)", confidence: "high", note: "The {SHA} prefix is an LDAP-style base64 SHA-1." }); return out; }
+
+  // MySQL 4.1+ is a very specific shape.
+  if (/^\*[0-9A-F]{40}$/i.test(h)) {
+    out.push({ name: "MySQL 4.1+ (SHA-1 based)", confidence: "high", note: "A leading * followed by 40 uppercase hex characters is the MySQL 4.1+ password hash." });
+    return out;
+  }
+
+  if (isHex) {
+    if (len === 8) {
+      out.push({ name: "CRC32", confidence: "med", note: "8 hex characters. Also matches Adler-32 and other 32-bit checksums. Not a cryptographic hash." });
+      out.push({ name: "CRC32B", confidence: "low", note: "Same length, common variant." });
+    } else if (len === 16) {
+      out.push({ name: "MySQL < 4.1", confidence: "med", note: "16 hex characters matches the old MySQL password() hash." });
+      out.push({ name: "CRC64 / DES-based", confidence: "low", note: "Other 64-bit outputs share this length." });
+    } else if (len === 32) {
+      out.push({ name: "MD5", confidence: "high", note: "32 hex characters. The most common 32-hex hash by far." });
+      out.push({ name: "NTLM", confidence: "med", note: "Windows NTLM hashes are also 32 hex characters and indistinguishable by shape." });
+      out.push({ name: "MD4", confidence: "low", note: "Same length as MD5." });
+      out.push({ name: "MD2", confidence: "low", note: "Same length." });
+      out.push({ name: "LM (half)", confidence: "low", note: "Also 32 hex in some representations." });
+    } else if (len === 40) {
+      out.push({ name: "SHA-1", confidence: "high", note: "40 hex characters is the classic SHA-1 length." });
+      out.push({ name: "RIPEMD-160", confidence: "low", note: "Also produces 160 bits, 40 hex." });
+      out.push({ name: "MySQL 4.1+ (unprefixed)", confidence: "low", note: "The SHA-1 core of a MySQL hash without the leading *." });
+    } else if (len === 56) {
+      out.push({ name: "SHA-224", confidence: "high", note: "56 hex characters." });
+      out.push({ name: "SHA3-224", confidence: "low", note: "Same output length." });
+    } else if (len === 64) {
+      out.push({ name: "SHA-256", confidence: "high", note: "64 hex characters is the most common 256-bit hash." });
+      out.push({ name: "SHA3-256", confidence: "low", note: "Same length as SHA-256." });
+      out.push({ name: "BLAKE2s / Keccak-256", confidence: "low", note: "Other 256-bit hashes share this length." });
+    } else if (len === 96) {
+      out.push({ name: "SHA-384", confidence: "high", note: "96 hex characters." });
+      out.push({ name: "SHA3-384", confidence: "low", note: "Same length." });
+    } else if (len === 128) {
+      out.push({ name: "SHA-512", confidence: "high", note: "128 hex characters is the most common 512-bit hash." });
+      out.push({ name: "SHA3-512 / BLAKE2b", confidence: "low", note: "Other 512-bit hashes share this length." });
+      out.push({ name: "Whirlpool", confidence: "low", note: "Also 128 hex characters." });
+    } else {
+      out.push({ name: "Unknown hex string", confidence: "low", note: len + " hex characters does not match a common hash length. Could be a truncated hash, an encoding, or an identifier." });
+    }
+    return out;
+  }
+
+  // Non-hex: consider base64-looking strings.
+  if (B64.test(h)) {
+    out.push({ name: "Base64-encoded value", confidence: "med", note: "Looks like base64. Could be a base64-encoded raw hash, a token, or arbitrary data. Decode it to inspect the byte length." });
+    if (len === 28) out.push({ name: "SHA-1 (base64)", confidence: "low", note: "28 base64 characters decodes to 20 bytes, the SHA-1 size." });
+    if (len === 44) out.push({ name: "SHA-256 (base64)", confidence: "low", note: "44 base64 characters decodes to 32 bytes, the SHA-256 size." });
+    if (len === 88) out.push({ name: "SHA-512 (base64)", confidence: "low", note: "88 base64 characters decodes to 64 bytes, the SHA-512 size." });
+    return out;
+  }
+
+  out.push({ name: "Unrecognized format", confidence: "low", note: "This string is not pure hex, not base64, and has no known prefix. It may not be a hash at all." });
+  return out;
+}
+
+function run() {
+  const raw = $("hash-input").value;
+  const h = raw.trim();
+  const out = $("output");
+  out.innerHTML = "";
+  if (!h) {
+    $("meta").textContent = "";
+    out.innerHTML = '<div class="empty">Paste a hash above and press Identify.</div>';
+    return;
+  }
+  const charset = HEX.test(h) ? "hexadecimal" : (B64.test(h) ? "base64-like" : "mixed / other");
+  $("meta").textContent = "Length: " + h.length + " characters. Character set: " + charset + ".";
+
+  const candidates = identify(h);
+  if (!candidates.length) {
+    out.innerHTML = '<div class="empty">No candidates.</div>';
+    return;
+  }
+  candidates.forEach((c) => {
+    const div = document.createElement("div");
+    div.className = "candidate";
+    const label = c.confidence === "high" ? "HIGH" : c.confidence === "med" ? "MEDIUM" : "LOW";
+    div.innerHTML =
+      '<span class="conf ' + c.confidence + '">' + label + "</span>" +
+      '<div class="cand-body">' +
+        '<div class="cand-name">' + escapeHtml(c.name) + "</div>" +
+        '<div class="cand-note">' + escapeHtml(c.note) + "</div>" +
+      "</div>";
+    out.appendChild(div);
+  });
+}
+
+$("id-btn").addEventListener("click", run);
+$("sample-btn").addEventListener("click", () => {
+  $("hash-input").value = "5f4dcc3b5aa765d61d8327deb882cf99";
+  run();
+});
+$("clear-btn").addEventListener("click", () => {
+  $("hash-input").value = "";
+  $("output").innerHTML = "";
+  $("meta").textContent = "";
+});
+$("hash-input").addEventListener("input", run);
+
+run();
+</script>
+</body>
+</html>
