@@ -2,9 +2,18 @@
 
 Paste a hash string and get a ranked list of the algorithms that could have produced it, based on length and format. It recognizes MD5, SHA-1, SHA-256, SHA-512, CRC32, bcrypt, argon2, NTLM, MySQL, base64-looking values, and several Unix crypt formats, and it is honest when the answer is ambiguous. Single self-contained file, no external dependencies, works offline.
 
-## Live demo
+**Live demo:** https://0xelitesystem.github.io/hash-identifier/
 
-https://0xelitesystem.github.io/hash-identifier/
+## Use
+
+1. Paste a hash string into the Hash field, or click **Load sample**.
+2. Click **Identify**.
+3. Read the ranked candidates with their confidence labels and notes.
+4. Check the Quick reference table for common lengths and formats.
+
+## Why this exists
+
+Hashes found in configs, dumps, and logs rarely say which algorithm made them. This tool narrows the candidates by format and is honest when a length matches several algorithms. It is one HTML file with inline CSS and JavaScript: no account, no tracking, no analytics, no external scripts or fonts, and it works offline. MIT licensed, so you can fork it, self-host it, or read every line.
 
 ## Features
 
@@ -25,7 +34,20 @@ This is format-based heuristic identification, not verification. It cannot confi
 
 ## Privacy
 
-Everything runs in your browser. The hash you paste is never sent anywhere. There are no external scripts, fonts, stylesheets, or analytics. Open the page source to confirm. It works fully offline.
+Everything runs in your browser. The hash you paste is never sent anywhere. There are no external scripts, fonts, stylesheets, or analytics. Open the page source to confirm. It works fully offline. The only thing written to storage is your light or dark theme choice, saved in localStorage under the key `theme`.
+
+## Run locally
+
+```bash
+git clone https://github.com/0xelitesystem/hash-identifier
+cd hash-identifier
+```
+
+Then open `index.html` in any modern browser. Or serve the folder with `python -m http.server 8000` and visit http://localhost:8000.
+
+## Build
+
+No build step. The whole tool is one `index.html` with no dependencies, so there is nothing to install or compile.
 
 ## More
 
