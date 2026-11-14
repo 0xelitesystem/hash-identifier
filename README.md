@@ -4,6 +4,8 @@ Paste a hash string and get a ranked list of the algorithms that could have prod
 
 **Live demo:** https://0xelitesystem.github.io/hash-identifier/
 
+Not affiliated with the hash-identifier tool packaged in Kali Linux.
+
 ## Use
 
 1. Paste a hash string into the Hash field, or click **Load sample**.
